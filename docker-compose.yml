@@ -1,0 +1,62 @@
+services:
+    app:
+        build: .
+        image: laravel-app
+        container_name: laravel-app
+        restart: unless-stopped
+        tty: true
+        environment:
+            SERVICE_NAME: app
+            DB_CONNECTION: mysql
+            DB_HOST: db
+            DB_PORT: 3306
+            DB_DATABASE: octobees
+            DB_USERNAME: root
+            DB_PASSWORD: root
+        working_dir: /var/www/html
+        volumes:
+            - .:/var/www/html
+            - ./storage/php.ini:/usr/local/etc/php/conf.d/local.ini
+        networks:
+            - laravel-app
+
+    webserver:
+        image: nginx:alpine
+        container_name: nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/var/www/html
+            - ./storage/:/etc/nginx/conf.d/
+        networks:
+            - laravel-app
+
+    db:
+        container_name: db
+        restart: always
+        image: mysql:latest
+        platform: linux/x86_64
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: 'root'
+            MYSQL_DATABASE: 'octobees'
+            MYSQL_USER: 'laravel_user'
+            MYSQL_PASS: 'user_password'
+        volumes:
+            - lbdata:/var/lib/mysql
+        networks:
+            - laravel-app
+
+
+networks:
+    laravel-app:
+        driver: bridge
+
+volumes:
+    lbdata:
+        driver: local
+
+
