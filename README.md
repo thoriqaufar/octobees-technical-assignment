@@ -1,5 +1,5 @@
 
-# Octobees Technical Assignment - Full Stack Developer
+# Octobees Technical Assessment - Full Stack Developer
 
 
 
